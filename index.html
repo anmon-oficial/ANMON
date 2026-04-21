@@ -10,12 +10,10 @@
         :root { --accent: #2ecc71; --bg: #0d0d0d; }
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         
-        /* Reset para forzar el foco en iPhone */
         html, body { 
             background: var(--bg); margin: 0; padding: 0; 
-            height: 100%; width: 100%;
+            height: 100%; width: 100%; overflow: hidden;
             font-family: -apple-system, system-ui, sans-serif;
-            overflow-x: hidden;
         }
 
         /* LOGIN */
@@ -35,25 +33,27 @@
         }
         .mail-info { position: absolute; bottom: 40px; color: #666; font-size: 13px; text-align: center; }
 
-        /* CONTENEDOR CHAT: Sin fixed para que el teclado no se pierda */
+        /* CHAT: Layout que no se rompe */
         #chat-screen { 
             display: none; 
             flex-direction: column; 
-            height: 100vh; 
-            position: relative;
+            height: 100vh; /* Altura total de la pantalla */
+            width: 100vw;
         }
 
         #header { 
             padding: env(safe-area-inset-top, 44px) 20px 15px;
             background: #161616; border-bottom: 1px solid #333;
             display: flex; justify-content: space-between; align-items: center;
+            flex-shrink: 0; /* No se achica */
         }
 
         #messages { 
-            flex: 1; overflow-y: auto; padding: 15px; 
-            display: flex; flex-direction: column; gap: 10px;
+            flex: 1; /* Ocupa todo el espacio sobrante */
+            overflow-y: auto; 
+            padding: 20px 15px; 
+            display: flex; flex-direction: column; gap: 12px;
             background: var(--bg);
-            /* Importante para el scroll en iPhone */
             -webkit-overflow-scrolling: touch;
         }
 
@@ -64,28 +64,19 @@
         .msg.me { align-self: flex-end; background: #1a1a1a; border: 1px solid #333; color: white; border-bottom-right-radius: 4px; }
         .msg.them { align-self: flex-start; background: #000; border: 1px solid var(--accent); border-bottom-left-radius: 4px; }
 
-        /* AREA DE ENTRADA: Simplificada al máximo */
+        /* AREA DE ENTRADA: Siempre visible abajo */
         #input-area { 
             background: #161616; 
             border-top: 1px solid #333;
             padding: 10px 15px calc(env(safe-area-inset-bottom, 15px) + 10px);
-            display: flex; 
-            gap: 10px; 
-            width: 100%;
+            display: flex; gap: 10px; align-items: center;
+            flex-shrink: 0; /* Se queda abajo */
         }
         
         #msg-input { 
-            flex: 1; 
-            background: #252525; 
-            border: 1px solid #444; 
-            color: white; 
-            padding: 14px 18px; 
-            border-radius: 25px; 
-            font-size: 16px; /* 16px evita el zoom automático de iPhone */
-            outline: none;
-            /* Forzamos visibilidad total para el sistema */
-            -webkit-appearance: none;
-            opacity: 1;
+            flex: 1; background: #252525; border: 1px solid #444; 
+            color: white; padding: 14px 18px; border-radius: 25px; 
+            font-size: 16px; outline: none;
         }
 
         #send-btn { 
@@ -137,8 +128,6 @@
                 document.getElementById('login-screen').style.display = 'none';
                 document.getElementById('chat-screen').style.display = 'flex';
                 document.getElementById('room-display').innerText = "SALA: " + currentRoom;
-                // Pequeño truco para iPhone: forzar foco tras el login
-                setTimeout(() => { document.getElementById('msg-input').focus(); }, 500);
                 startChat();
             } else { alert("PIN INVÁLIDO"); }
         });
@@ -152,7 +141,7 @@
                 const div = document.createElement('div');
                 div.id = 'msg-' + snap.key;
                 div.className = 'msg ' + (data.user === currentUser ? 'me' : 'them');
-                const delBtn = data.user === currentUser ? `<span onclick="deleteMsg('${snap.key}')" style="color:#ff4444;margin-left:8px;font-size:14px;">🗑️</span>` : '';
+                const delBtn = data.user === currentUser ? `<span onclick="deleteMsg('${snap.key}')" style="color:#ff4444;margin-left:8px;font-size:14px;cursor:pointer">🗑️</span>` : '';
                 div.innerHTML = `<div style="font-size:10px;color:var(--accent);font-weight:bold;margin-bottom:2px;">${data.user}</div>
                                  <div>${data.text}</div>
                                  <div style="display:flex;justify-content:flex-end;margin-top:4px;font-size:10px;opacity:0.4">
@@ -174,11 +163,7 @@
         i.focus();
     }
 
-    // Soporte para tecla Enter del teclado móvil
-    document.getElementById('msg-input').addEventListener('keypress', function (e) {
-        if (e.key === 'Enter') { sendMsg(); }
-    });
-
+    document.getElementById('msg-input').addEventListener('keypress', (e) => { if (e.key === 'Enter') sendMsg(); });
     function deleteMsg(id) { if(confirm("¿Eliminar?")) db.ref('rooms/' + currentRoom + '/' + id).remove(); }
     function nukeChat() { if(confirm("¿Vaciar sala?")) db.ref('rooms/' + currentRoom).remove(); }
 </script>
