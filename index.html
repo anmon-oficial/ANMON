@@ -14,7 +14,7 @@
             background: var(--bg); margin: 0; padding: 0; 
             height: 100%; width: 100%;
             font-family: -apple-system, system-ui, sans-serif;
-            overflow: hidden;
+            overflow: hidden; position: fixed; /* Evita rebotes en iOS */
         }
 
         /* LOGIN */
@@ -31,55 +31,54 @@
         .login-btn { 
             background: var(--accent); color: black; padding: 18px; width: 100%; 
             max-width: 300px; border-radius: 12px; font-weight: bold; border: none; 
-            font-size: 16px; text-transform: uppercase; cursor: pointer;
+            font-size: 16px; text-transform: uppercase;
         }
         .mail-info { position: absolute; bottom: 40px; color: #666; font-size: 13px; text-align: center; }
-        .mail-info b { color: var(--accent); }
 
-        /* CHAT ESTRUCTURA FLEXIBLE (PARA EL TECLADO) */
+        /* CHAT */
         #chat-screen { display: none; flex-direction: column; height: 100vh; }
 
         #header { 
-            padding-top: env(safe-area-inset-top, 44px);
-            padding-bottom: 15px; padding-left: 20px; padding-right: 20px;
+            padding: env(safe-area-inset-top, 44px) 20px 15px;
             background: #161616; border-bottom: 1px solid #222;
             display: flex; justify-content: space-between; align-items: center; flex-shrink: 0;
         }
-        .room-name { color: var(--accent); font-size: 13px; font-weight: 800; text-transform: uppercase; }
 
         #messages { 
-            flex: 1; overflow-y: auto; padding: 20px; 
-            display: flex; flex-direction: column; gap: 12px;
+            flex: 1; overflow-y: auto; padding: 15px; 
+            display: flex; flex-direction: column; gap: 10px;
             background: var(--bg); -webkit-overflow-scrolling: touch;
         }
 
         .msg { 
             padding: 12px 16px; border-radius: 18px; max-width: 85%; 
-            font-size: 17px; line-height: 1.4; position: relative;
-            word-wrap: break-word; overflow-wrap: break-word;
+            font-size: 17px; line-height: 1.4; word-wrap: break-word;
         }
         .msg.me { align-self: flex-end; background: #1a1a1a; border: 1px solid #333; color: white; border-bottom-right-radius: 4px; }
         .msg.them { align-self: flex-start; background: #000; border: 1px solid var(--accent); border-bottom-left-radius: 4px; }
 
-        .info { display: flex; justify-content: flex-end; align-items: center; margin-top: 6px; font-size: 11px; opacity: 0.5; }
-        .del { color: #ff4444; margin-left: 10px; font-size: 16px; cursor: pointer; }
-
-        /* INPUT AREA SIN POSICIÓN FIJA PARA EVITAR BLOQUEO DE TECLADO */
+        /* AREA DE ENTRADA RE-DISEÑADA PARA TECLADO IOS */
         #input-area { 
-            padding: 10px 15px;
-            padding-bottom: calc(env(safe-area-inset-bottom, 20px) + 10px);
-            background: #161616; border-top: 1px solid #222;
-            display: flex; gap: 10px; flex-shrink: 0;
+            background: #161616; 
+            border-top: 1px solid #222;
+            padding: 10px 15px calc(env(safe-area-inset-bottom, 15px) + 10px);
+            display: flex; gap: 10px; align-items: center;
+            flex-shrink: 0;
         }
+        
         #msg-input { 
-            flex: 1; background: #222; border: 1px solid #333; 
-            color: white; padding: 14px 18px; border-radius: 25px; 
+            flex: 1; background: #222; border: 1px solid #444; 
+            color: white; padding: 12px 18px; border-radius: 25px; 
             font-size: 16px; outline: none;
+            /* Estos 3 son clave para el teclado */
+            display: block !important;
+            visibility: visible !important;
             -webkit-user-select: text !important;
         }
+
         #send-btn { 
-            width: 50px; height: 50px; background: var(--accent); 
-            border-radius: 50%; border: none; font-weight: bold; font-size: 20px;
+            width: 45px; height: 45px; background: var(--accent); 
+            border-radius: 50%; border: none; font-weight: bold; font-size: 18px;
         }
     </style>
 </head>
@@ -97,12 +96,12 @@
 
 <div id="chat-screen">
     <div id="header">
-        <div class="room-name" id="room-display">SALA</div>
-        <div onclick="nukeChat()" style="font-size: 24px; cursor: pointer;">🧨</div>
+        <div id="room-display" style="color:var(--accent); font-weight:800; font-size:12px; text-transform:uppercase;">SALA</div>
+        <div onclick="nukeChat()" style="font-size: 22px; cursor: pointer;">🧨</div>
     </div>
     <div id="messages"></div>
     <div id="input-area">
-        <input type="text" id="msg-input" placeholder="Escribir..." autocomplete="off">
+        <input type="text" id="msg-input" placeholder="Escribir..." autocomplete="off" enterkeyhint="send">
         <button id="send-btn" onclick="sendMsg()">></button>
     </div>
 </div>
@@ -125,10 +124,9 @@
             if(found) {
                 document.getElementById('login-screen').style.display = 'none';
                 document.getElementById('chat-screen').style.display = 'flex';
-                document.getElementById('room-display').innerText = "BÚNKER: " + currentRoom;
-                window.scrollTo(0, 0); // Reset para iPhone
+                document.getElementById('room-display').innerText = "SALA: " + currentRoom;
                 startChat();
-            } else { alert("ACCESO DENEGADO"); }
+            } else { alert("PIN INVÁLIDO"); }
         });
     }
 
@@ -140,17 +138,19 @@
                 const div = document.createElement('div');
                 div.id = 'msg-' + snap.key;
                 div.className = 'msg ' + (data.user === currentUser ? 'me' : 'them');
-                const delBtn = data.user === currentUser ? `<span class="del" onclick="deleteMsg('${snap.key}')">🗑️</span>` : '';
-                div.innerHTML = `<div style="font-size:10px;color:var(--accent);font-weight:bold;margin-bottom:4px;">${data.user}</div>
+                const delBtn = data.user === currentUser ? `<span onclick="deleteMsg('${snap.key}')" style="color:#ff4444;margin-left:8px;font-size:14px;cursor:pointer">🗑️</span>` : '';
+                div.innerHTML = `<div style="font-size:10px;color:var(--accent);font-weight:bold;margin-bottom:2px;">${data.user}</div>
                                  <div>${data.text}</div>
-                                 <div class="info"><span id="check-${snap.key}">${data.read ? '✓✓' : '✓'}</span>${delBtn}</div>`;
+                                 <div style="display:flex;justify-content:flex-end;margin-top:4px;font-size:10px;opacity:0.4">
+                                    <span>${data.read ? '✓✓' : '✓'}</span>${delBtn}
+                                 </div>`;
                 document.getElementById('messages').appendChild(div);
                 document.getElementById('messages').scrollTop = document.getElementById('messages').scrollHeight;
             }
             if(data.user !== currentUser && !data.read) ref.child(snap.key).update({read:true});
         });
         ref.on('child_removed', snap => { const el = document.getElementById('msg-' + snap.key); if(el) el.remove(); });
-        ref.on('child_changed', snap => { const el = document.getElementById('check-' + snap.key); if(el && snap.val().read) el.innerText = '✓✓'; });
+        ref.on('child_changed', snap => { const el = document.getElementById('messages').querySelector('#msg-'+snap.key+' span'); if(el && snap.val().read) el.innerText = '✓✓'; });
     }
 
     function sendMsg() {
@@ -158,8 +158,14 @@
         if(!i.value.trim()) return;
         db.ref('rooms/' + currentRoom).push({user:currentUser, text:i.value.trim(), timestamp:Date.now(), read:false});
         i.value = '';
-        i.focus(); // Mantiene el teclado abierto tras enviar
+        i.focus(); // Mantiene el teclado arriba
     }
+
+    // Soporte para tecla Enter del teclado móvil
+    document.getElementById('msg-input').addEventListener('keypress', function (e) {
+        if (e.key === 'Enter') { sendMsg(); }
+    });
+
     function deleteMsg(id) { if(confirm("¿Eliminar?")) db.ref('rooms/' + currentRoom + '/' + id).remove(); }
     function nukeChat() { if(confirm("¿Vaciar sala?")) db.ref('rooms/' + currentRoom).remove(); }
 </script>
