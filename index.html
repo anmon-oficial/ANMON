@@ -3,63 +3,136 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title id="tab-title">ANMON | Private Network</title>
+    <title>ANMON</title>
     <style>
-        :root { --cyan: #00ffff; --bg: #0b141a; --header: #202c33; --incoming: #202c33; --outgoing: #005c4b; }
-        body { margin: 0; font-family: sans-serif; background: #000; color: white; height: 100vh; overflow: hidden; }
-        #login-screen { position: fixed; inset: 0; background: #000; display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 1000; padding: 25px; }
-        .logo { font-size: 30px; font-weight: 200; color: var(--cyan); letter-spacing: 8px; margin-bottom: 20px; }
+        :root { --cyan: #00ffff; --bg: #0b141a; --header: #202c33; --incoming: #202c33; --outgoing: #005c4b; --panic: #ff0000; }
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        body { margin: 0; font-family: -apple-system, sans-serif; background: #000; color: white; height: 100dvh; overflow: hidden; }
         
-        /* Estilos Camuflaje */
-        .stealth-options { display: flex; gap: 10px; margin-bottom: 20px; }
-        .btn-stealth { background: #111; border: 1px solid #333; color: #555; padding: 5px 10px; font-size: 10px; border-radius: 5px; cursor: pointer; }
-        .btn-stealth.active { border-color: var(--cyan); color: var(--cyan); }
+        #login-screen { position: fixed; inset: 0; background: #000; display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 1000; padding: 30px; }
+        .logo { font-size: 35px; font-weight: 200; color: var(--cyan); letter-spacing: 12px; margin-bottom: 40px; text-shadow: 0 0 20px rgba(0,255,255,0.6); }
+        input { width: 100%; max-width: 320px; padding: 16px; margin: 8px 0; background: #111; border: 1px solid #222; color: white; border-radius: 14px; font-size: 16px; outline: none; text-align: center; }
+        .btn-enter { width: 100%; max-width: 320px; padding: 16px; background: var(--cyan); color: #000; border: none; border-radius: 14px; font-weight: bold; cursor: pointer; font-size: 16px; margin-top: 10px; }
 
-        input { width: 100%; max-width: 280px; padding: 15px; margin: 8px 0; background: #111; border: 1px solid #222; color: white; border-radius: 12px; outline: none; text-align: center; font-size: 16px; }
-        .btn { width: 100%; max-width: 280px; padding: 15px; background: var(--cyan); color: #000; border: none; border-radius: 12px; font-weight: bold; cursor: pointer; margin-top: 10px; }
-        #chat-screen { display: none; flex-direction: column; height: 100vh; background: #0b141a; }
-        header { background: var(--header); padding: 12px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #333; }
-        #chat-box { flex: 1; overflow-y: auto; padding: 15px; display: flex; flex-direction: column; gap: 8px; }
-        .msg { max-width: 80%; padding: 10px; border-radius: 10px; font-size: 14px; line-height: 1.4; }
-        .sent { align-self: flex-end; background: var(--outgoing); border-bottom-right-radius: 2px; }
-        .received { align-self: flex-start; background: var(--incoming); border-bottom-left-radius: 2px; }
-        .input-bar { background: var(--header); padding: 12px; display: flex; gap: 10px; }
-        #msg-in { flex: 1; background: #2a3942; border: none; border-radius: 20px; padding: 10px 15px; text-align: left; color: white; }
+        #chat-screen { display: none; flex-direction: column; height: 100dvh; background: #0b141a; }
+        header { background: var(--header); padding: 12px 18px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #333; }
+        #chat-box { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 12px; background-image: url('https://user-images.githubusercontent.com/15075759/28719144-86dc0f70-73b1-11e7-911d-60d70fcded21.png'); background-blend-mode: overlay; }
+        
+        .msg { max-width: 82%; padding: 10px 14px; border-radius: 16px; font-size: 15px; line-height: 1.4; word-wrap: break-word; position: relative; }
+        .sent { align-self: flex-end; background: var(--outgoing); border-bottom-right-radius: 4px; }
+        .received { align-self: flex-start; background: var(--incoming); border-bottom-left-radius: 4px; }
+        .alias-tag { font-size: 11px; font-weight: 900; color: var(--cyan); display: block; margin-bottom: 4px; text-transform: uppercase; }
+
+        .input-bar { background: var(--header); padding: 15px; display: flex; gap: 12px; align-items: center; padding-bottom: calc(15px + env(safe-area-inset-bottom)); }
+        #msg-in { flex: 1; background: #2a3942; border: none; border-radius: 25px; padding: 12px 20px; color: white; font-size: 16px; }
+        .panic-btn { background: var(--panic); color: white; border: none; padding: 8px 14px; border-radius: 10px; font-weight: bold; font-size: 11px; }
     </style>
 </head>
 <body>
-
     <div id="login-screen">
         <div class="logo">ANMON</div>
-        
-        <p style="font-size: 10px; color: #444; margin-bottom: 5px;">MODO DISCRETO:</p>
-        <div class="stealth-options">
-            <button class="btn-stealth" onclick="setStealth('futbol')">⚽ SPORT</button>
-            <button class="btn-stealth" onclick="setStealth('beauty')">💅 BEAUTY</button>
-            <button class="btn-stealth" onclick="setStealth('news')">📰 NEWS</button>
-        </div>
-
-        <input type="text" id="user-name" placeholder="Tu Alias" autocomplete="off">
-        <input type="text" id="room-id" placeholder="Canal Secreto" autocomplete="off">
-        <input type="password" id="pass-code" placeholder="PIN de Acceso" autocomplete="new-password">
-        <button class="btn" onclick="checkAccess()">INGRESAR</button>
+        <input type="text" id="user-name" placeholder="Tu Alias" autocomplete="off" spellcheck="false">
+        <input type="text" id="room-id" placeholder="Canal Secreto" autocomplete="off" spellcheck="false">
+        <input type="password" id="pass-code" placeholder="PIN de Acceso">
+        <button class="btn-enter" id="login-btn">INGRESAR</button>
     </div>
 
     <div id="chat-screen">
         <header>
-            <div style="display:flex; flex-direction:column">
-                <span id="display-room" style="color:var(--cyan); font-weight:bold; font-size:12px"></span>
-                <button onclick="invite()" style="background:none; border:none; color:#25D366; font-size:10px; text-align:left; padding:0; cursor:pointer">📢 Invitar a este canal</button>
-            </div>
-            <button onclick="location.reload()" style="background:#dc3545; border:none; color:white; border-radius:5px; padding:6px 12px; font-size:10px; font-weight:bold">BORRAR TODO</button>
+            <span id="display-room" style="color:var(--cyan); font-weight:bold; font-size:14px;"></span>
+            <button class="panic-btn" onclick="panicButton()">PÁNICO</button>
         </header>
         <div id="chat-box"></div>
         <div class="input-bar">
-            <input type="text" id="msg-in" placeholder="Escribe mensaje..." autocomplete="off">
-            <button onclick="send()" style="background:none; border:none; color:var(--cyan); font-size:24px">➤</button>
+            <input type="text" id="msg-in" placeholder="Escribe..." autocomplete="off">
+            <button id="send-btn" style="background:none; border:none; color:var(--cyan); font-size:30px; cursor:pointer;">➤</button>
         </div>
     </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import
+        import { getDatabase, ref, push, onValue, get, serverTimestamp, remove } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyApduAcJs4QITtqQKeNe88WCNPu1iMswO0",
+            authDomain: "anmon-c2f58.firebaseapp.com",
+            databaseURL: "https://anmon-c2f58-default-rtdb.firebaseio.com",
+            projectId: "anmon-c2f58",
+            storageBucket: "anmon-c2f58.appspot.com",
+            messagingSenderId: "438785819225",
+            appId: "1:438785819225:web:67b93ab0c2cbc519926748"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+        let currentAlias, currentRoom;
+
+        document.getElementById('login-btn').onclick = async () => {
+            const alias = document.getElementById('user-name').value.trim();
+            const room = document.getElementById('room-id').value.trim().toLowerCase();
+            const pin = document.getElementById('pass-code').value.trim().toUpperCase();
+            
+            if(!alias || !room || !pin) return alert("Completa los campos");
+
+            const snap = await get(ref(db, 'valid_pins/' + pin));
+            if (snap.exists()) {
+                currentAlias = alias;
+                currentRoom = room;
+                document.getElementById('login-screen').style.display = 'none';
+                document.getElementById('chat-screen').style.display = 'flex';
+                startChat();
+            } else {
+                alert("PIN INVÁLIDO");
+            }
+        };
+
+        function startChat() {
+            document.getElementById('display-room').innerText = "# " + currentRoom.toUpperCase();
+            onValue(ref(db, 'messages/' + currentRoom), (snap) => {
+                const box = document.getElementById('chat-box');
+                box.innerHTML = "";
+                snap.forEach(child => {
+                    const data = child.val();
+                    const div = document.createElement('div');
+                    const isMe = data.user === currentAlias;
+                    div.className = `msg ${isMe ? 'sent' : 'received'}`;
+                    div.innerHTML = `<span class="alias-tag">${data.user}</span><span>${data.text}</span>`;
+                    box.appendChild(div);
+                });
+                box.scrollTop = box.scrollHeight;
+            });
+        }
+
+        async function send() {
+            const input = document.getElementById('msg-in');
+            const val = input.value.trim();
+            if(!val) return;
+            
+            input.value = "";
+            try {
+                await push(ref(db, 'messages/' + currentRoom), {
+                    user: currentAlias,
+                    text: val,
+                    timestamp: serverTimestamp()
+                });
+            } catch(e) {
+                console.error(e);
+                alert("Error al enviar. Revisa tu conexión.");
+            }
+        }
+
+        document.getElementById('send-btn').onclick = send;
+        document.getElementById('msg-in').onkeypress = (e) => {
+            if(e.key === 'Enter') {
+                send();
+            }
+        };
+
+        window.panicButton = async () => {
+            if(confirm("¿Borrar todos los mensajes de este canal?")) {
+                await remove(ref(db, 'messages/' + currentRoom));
+            }
+        };
+    </script>
+</body>
+</html>
