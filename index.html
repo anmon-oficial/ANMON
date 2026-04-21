@@ -21,7 +21,7 @@
             position: fixed; inset: 0; background: var(--bg); z-index: 1000; 
             display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 20px; 
         }
-        .logo { font-size: 42px; color: var(--accent); font-weight: 900; letter-spacing: 10px; }
+        .logo { font-size: 42px; color: var(--accent); font-weight: 900; letter-spacing: 10px; text-shadow: 0 0 15px rgba(46, 204, 113, 0.3); }
         .login-input { 
             background: #1c1c1e; border: 1px solid #333; color: white; padding: 18px; 
             margin-bottom: 12px; width: 100%; max-width: 300px; border-radius: 12px; 
@@ -32,8 +32,9 @@
             max-width: 300px; border-radius: 12px; font-weight: bold; border: none; font-size: 16px;
         }
         .mail-info { position: absolute; bottom: 40px; color: #888; font-size: 13px; text-align: center; }
+        .mail-info b { color: var(--accent); }
 
-        /* CHAT */
+        /* CHAT ESTRUCTURA */
         #chat-screen { display: none; flex-direction: column; height: 100dvh; width: 100vw; }
 
         #header { 
@@ -43,10 +44,9 @@
             flex-shrink: 0; z-index: 10;
         }
 
-        /* CORRECCIÓN: Los mensajes ahora tienen espacio para no quedar altos */
         #messages { 
             flex: 1; overflow-y: auto; 
-            padding: 15px 15px 30px 15px; /* Espacio extra abajo */
+            padding: 20px 15px;
             display: flex; flex-direction: column; gap: 10px;
             background: var(--bg); -webkit-overflow-scrolling: touch;
         }
@@ -58,7 +58,7 @@
         .msg.me { align-self: flex-end; background: #2c2c2e; color: white; border-bottom-right-radius: 4px; }
         .msg.them { align-self: flex-start; background: #1c1c1e; border: 1px solid var(--accent); border-bottom-left-radius: 4px; }
 
-        /* AREA DE ENTRADA */
+        /* ÁREA DE ESCRITURA */
         #input-area { 
             background: var(--header-bg); border-top: 1px solid #333;
             padding: 10px 15px calc(env(safe-area-inset-bottom, 15px) + 10px);
@@ -68,12 +68,13 @@
         #msg-input { 
             flex: 1; background: #2c2c2e; border: 1px solid #444; 
             color: white; padding: 14px 18px; border-radius: 25px; 
-            font-size: 17px; outline: none;
+            font-size: 16px; outline: none;
         }
 
         #send-btn { 
             width: 50px; height: 50px; background: var(--accent); 
             border-radius: 50%; border: none; font-weight: bold; font-size: 20px;
+            display: flex; align-items: center; justify-content: center;
         }
     </style>
 </head>
@@ -81,22 +82,22 @@
 
 <div id="login-screen">
     <div class="logo">ANMON</div>
-    <div style="color:#555; font-size:10px; letter-spacing:3px; margin-bottom:30px;">SECURE ACCESS</div>
+    <div style="color:#555; font-size:10px; letter-spacing:3px; margin-bottom:30px; margin-top: 5px;">BUNKER MODE</div>
     <input type="text" id="user-input" class="login-input" placeholder="USUARIO" autocomplete="off">
     <input type="text" id="room-input" class="login-input" placeholder="SALA" autocomplete="off">
     <input type="password" id="pin-input" class="login-input" placeholder="PIN">
-    <button class="login-btn" onclick="login()">ENTRAR</button>
+    <button class="login-btn" onclick="login()">ACCEDER</button>
     <div class="mail-info">Solicitá tu PIN de acceso en:<br><b>nexo.seguro01@proton.me</b></div>
 </div>
 
 <div id="chat-screen">
     <div id="header">
         <div id="room-display" style="color:var(--accent); font-weight:800; font-size:12px; text-transform:uppercase;">SALA</div>
-        <div onclick="nukeChat()" style="font-size: 24px; cursor: pointer;">🧨</div>
+        <div onclick="nukeChat()" style="font-size: 24px; cursor: pointer; filter: drop-shadow(0 0 5px red);">🧨</div>
     </div>
     <div id="messages"></div>
     <div id="input-area">
-        <input type="text" id="msg-input" placeholder="Escribir mensaje..." autocomplete="off">
+        <input type="text" id="msg-input" placeholder="Escribir..." autocomplete="off">
         <button id="send-btn" onclick="sendMsg()">></button>
     </div>
 </div>
@@ -119,9 +120,9 @@
             if(found) {
                 document.getElementById('login-screen').style.display = 'none';
                 document.getElementById('chat-screen').style.display = 'flex';
-                document.getElementById('room-display').innerText = "SALA: " + currentRoom;
+                document.getElementById('room-display').innerText = "BÚNKER: " + currentRoom;
                 startChat();
-            } else { alert("PIN INVÁLIDO"); }
+            } else { alert("PIN INCÁLIDO"); }
         });
     }
 
@@ -133,19 +134,25 @@
                 const div = document.createElement('div');
                 div.id = 'msg-' + snap.key;
                 div.className = 'msg ' + (data.user === currentUser ? 'me' : 'them');
-                const delBtn = data.user === currentUser ? `<span onclick="deleteMsg('${snap.key}')" style="color:#ff4444;margin-left:8px;font-size:14px;cursor:pointer">🗑️</span>` : '';
-                div.innerHTML = `<div style="font-size:10px;color:var(--accent);font-weight:bold;margin-bottom:2px;">${data.user}</div>
+                const delBtn = data.user === currentUser ? `<span onclick="deleteMsg('${snap.key}')" style="color:#ff4444;margin-left:10px;font-size:14px;cursor:pointer">🗑️</span>` : '';
+                div.innerHTML = `<div style="font-size:10px;color:var(--accent);font-weight:bold;margin-bottom:3px;">${data.user}</div>
                                  <div>${data.text}</div>
-                                 <div style="display:flex;justify-content:flex-end;margin-top:4px;font-size:10px;opacity:0.5">
-                                    <span>${data.read ? '✓✓' : '✓'}</span>${delBtn}
+                                 <div style="display:flex;justify-content:flex-end;margin-top:5px;font-size:11px;">
+                                    <span style="color:${data.read ? '#3498db' : '#888'}">${data.read ? '✓✓' : '✓'}</span>${delBtn}
                                  </div>`;
                 document.getElementById('messages').appendChild(div);
-                // Forzar scroll al final para que los primeros no queden "pegados" arriba si hay muchos
                 document.getElementById('messages').scrollTop = document.getElementById('messages').scrollHeight;
             }
             if(data.user !== currentUser && !data.read) ref.child(snap.key).update({read:true});
         });
         ref.on('child_removed', snap => { const el = document.getElementById('msg-' + snap.key); if(el) el.remove(); });
+        ref.on('child_changed', snap => { 
+            const el = document.getElementById('msg-' + snap.key);
+            if(el && snap.val().read) {
+                const check = el.querySelector('span');
+                if(check) { check.innerText = '✓✓'; check.style.color = '#3498db'; }
+            }
+        });
     }
 
     function sendMsg() {
@@ -157,8 +164,8 @@
     }
 
     document.getElementById('msg-input').addEventListener('keypress', (e) => { if (e.key === 'Enter') sendMsg(); });
-    function deleteMsg(id) { if(confirm("¿Eliminar?")) db.ref('rooms/' + currentRoom + '/' + id).remove(); }
-    function nukeChat() { if(confirm("¿Vaciar sala?")) db.ref('rooms/' + currentRoom).remove(); }
+    function deleteMsg(id) { if(confirm("¿Eliminar mensaje?")) db.ref('rooms/' + currentRoom + '/' + id).remove(); }
+    function nukeChat() { if(confirm("¿VACIAR BÚNKER?")) db.ref('rooms/' + currentRoom).remove(); }
 </script>
 </body>
 </html>
