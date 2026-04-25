@@ -7,96 +7,53 @@
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
     <style>
-        :root { --accent: #00f3ff; --bg: #000000; --header-bg: #161616; }
-        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        :root { --accent: #00f3ff; --bg: #000000; --header-bg: #111; }
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; font-family: 'Courier New', Courier, monospace; }
         
-        html, body { 
-            background: var(--bg); margin: 0; padding: 0; 
-            height: 100%; width: 100%; overflow: hidden;
-            font-family: 'Courier New', monospace;
-        }
+        html, body { background: var(--bg); margin: 0; padding: 0; height: 100%; width: 100%; overflow: hidden; color: white; }
 
-        /* LOGIN NEON */
-        #login-screen { 
-            position: fixed; inset: 0; background: var(--bg); z-index: 1000; 
-            display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 20px; 
-        }
+        /* LOGIN */
+        #login-screen { position: fixed; inset: 0; background: var(--bg); z-index: 1000; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 20px; }
         .logo { font-size: 42px; color: var(--accent); font-weight: 900; letter-spacing: 10px; text-shadow: 0 0 15px rgba(0, 243, 255, 0.6); }
-        .login-input { 
-            background: #111; border: 1px solid #333; color: white; padding: 18px; 
-            margin-bottom: 12px; width: 100%; max-width: 300px; border-radius: 12px; 
-            text-align: center; font-size: 18px; outline: none;
-        }
+        .login-input { background: #111; border: 1px solid #333; color: var(--accent); padding: 18px; margin-bottom: 12px; width: 100%; max-width: 300px; border-radius: 8px; text-align: center; font-size: 16px; outline: none; }
         
-        .neon-blink {
-            background: #000 !important;
-            color: #00f3ff !important;
-            border: 2px solid #00f3ff !important;
-            padding: 18px !important;
-            width: 100%;
-            max-width: 300px;
-            border-radius: 12px;
-            font-weight: bold;
-            text-shadow: 0 0 10px #00f3ff;
-            box-shadow: 0 0 15px rgba(0, 243, 255, 0.4);
-            cursor: pointer;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            animation: parpadeo-anmon 2s infinite;
-        }
+        .neon-blink { background: #000; color: #00f3ff; border: 2px solid #00f3ff; padding: 18px; width: 100%; max-width: 300px; border-radius: 8px; font-weight: bold; text-shadow: 0 0 10px #00f3ff; box-shadow: 0 0 15px rgba(0, 243, 255, 0.4); cursor: pointer; animation: parpadeo 2s infinite; }
 
-        @keyframes parpadeo-anmon {
-            0%, 100% { opacity: 1; box-shadow: 0 0 15px rgba(0, 243, 255, 0.4); }
-            50% { opacity: 0.6; box-shadow: 0 0 5px rgba(0, 243, 255, 0.2); }
-        }
+        @keyframes parpadeo { 0%, 100% { opacity: 1; } 50% { opacity: 0.6; } }
 
-        .mail-info { position: absolute; bottom: 40px; color: #888; font-size: 13px; text-align: center; }
-        .mail-info b { color: var(--accent); }
-
-        /* CHAT ESTRUCTURA */
+        /* CHAT */
         #chat-screen { display: none; flex-direction: column; height: 100dvh; width: 100vw; }
-        #header { 
-            padding: env(safe-area-inset-top, 44px) 20px 15px;
-            background: var(--header-bg); border-bottom: 1px solid #333;
-            display: flex; justify-content: space-between; align-items: center; 
-        }
-        #messages { 
-            flex: 1; overflow-y: auto; padding: 20px 15px;
-            display: flex; flex-direction: column; gap: 10px;
-        }
-        .msg { padding: 12px 16px; border-radius: 18px; max-width: 85%; font-size: 17px; }
-        .msg.me { align-self: flex-end; background: #2c2c2e; color: white; }
-        .msg.them { align-self: flex-start; background: #1c1c1e; border: 1px solid var(--accent); }
+        #header { padding: env(safe-area-inset-top, 44px) 20px 15px; background: var(--header-bg); border-bottom: 1px solid #222; display: flex; justify-content: space-between; align-items: center; }
+        #messages { flex: 1; overflow-y: auto; padding: 20px 15px; display: flex; flex-direction: column; gap: 12px; background: #050505; }
+        
+        .msg { padding: 12px 16px; border-radius: 12px; max-width: 85%; font-size: 15px; border: 1px solid #222; position: relative; }
+        .msg.me { align-self: flex-end; background: #111; color: var(--accent); border-color: var(--accent); }
+        .msg.them { align-self: flex-start; background: #1a1a1a; color: #fff; }
 
-        #input-area { 
-            background: var(--header-bg); border-top: 1px solid #333;
-            padding: 10px 15px calc(env(safe-area-inset-bottom, 15px) + 10px);
-            display: flex; gap: 10px; align-items: center;
-        }
-        #msg-input { flex: 1; background: #2c2c2e; border: 1px solid #444; color: white; padding: 14px 18px; border-radius: 25px; outline: none; }
-        #send-btn { width: 50px; height: 50px; background: var(--accent); border-radius: 50%; border: none; font-weight: bold; }
+        #input-area { background: var(--header-bg); border-top: 1px solid #222; padding: 15px; display: flex; gap: 10px; align-items: center; }
+        #msg-input { flex: 1; background: #000; border: 1px solid #333; color: white; padding: 14px; border-radius: 8px; outline: none; }
+        #send-btn { width: 50px; height: 50px; background: var(--accent); border-radius: 8px; border: none; font-weight: bold; cursor: pointer; }
     </style>
 </head>
 <body>
 
 <div id="login-screen">
     <div class="logo">ANMON</div>
-    <div style="color:#555; font-size:10px; letter-spacing:3px; margin-bottom:30px; margin-top: 5px;">BUNKER MODE</div>
-    <input type="text" id="user-input" class="login-input" placeholder="USUARIO" autocomplete="off">
-    <input type="text" id="room-input" class="login-input" placeholder="SALA" autocomplete="off">
+    <div style="color:#444; font-size:10px; letter-spacing:3px; margin-bottom:30px;">ENCRYPTED TERMINAL</div>
+    <input type="text" id="user-input" class="login-input" placeholder="USUARIO">
+    <input type="text" id="room-input" class="login-input" placeholder="BUNKER ID">
     <input type="password" id="pin-input" class="login-input" placeholder="PIN">
     <button class="neon-blink" onclick="login()">ACCESO ENCRIPTADO</button>
-    <div class="mail-info">Solicitá tu PIN de acceso en:<br><b>nexo.seguro01@proton.me</b></div>
 </div>
 
 <div id="chat-screen">
     <div id="header">
-        <div id="room-display" style="color:var(--accent); font-weight:800; font-size:12px; text-transform:uppercase;">SALA</div>
-        <div onclick="nukeChat()" style="font-size: 24px; cursor: pointer;">🧨</div>
+        <div id="room-display" style="color:var(--accent); font-size:12px;">SALA: ---</div>
+        <div onclick="nukeChat()" style="font-size: 24px; cursor: pointer; filter: drop-shadow(0 0 5px red);">🧨</div>
     </div>
     <div id="messages"></div>
     <div id="input-area">
-        <input type="text" id="msg-input" placeholder="Escribir..." autocomplete="off">
+        <input type="text" id="msg-input" placeholder="Mensaje..." autocomplete="off">
         <button id="send-btn" onclick="sendMsg()">></button>
     </div>
 </div>
@@ -114,7 +71,6 @@
         
         if(!currentUser || !currentRoom || !pin) return;
 
-        // --- CONEXIÓN AL MOTOR CLOUDFLARE ---
         const urlMotor = "https://motor-anmon.nexo-seguro01.workers.dev/acceso?pin=" + pin;
 
         try {
@@ -122,43 +78,56 @@
             const data = await res.text();
 
             if(data !== "ERROR") {
-                localStorage.setItem('anmon_config', data);
                 document.getElementById('login-screen').style.display = 'none';
                 document.getElementById('chat-screen').style.display = 'flex';
                 document.getElementById('room-display').innerText = "BÚNKER: " + currentRoom;
                 startChat();
             } else {
-                alert("PIN INVÁLIDO O EXPIRADO");
+                alert("ACCESO DENEGADO");
             }
         } catch (e) {
-            alert("FALLO DE CONEXIÓN CON EL BÚNKER");
+            alert("ERROR DE CONEXIÓN");
         }
     }
 
     function startChat() {
         const ref = db.ref('rooms/' + currentRoom);
+        // Escucha mensajes nuevos
         ref.on('child_added', snap => {
             const data = snap.val();
             if(!document.getElementById('msg-' + snap.key)) {
                 const div = document.createElement('div');
                 div.id = 'msg-' + snap.key;
                 div.className = 'msg ' + (data.user === currentUser ? 'me' : 'them');
-                div.innerHTML = `<div style="font-size:10px;color:var(--accent);font-weight:bold;margin-bottom:3px;">${data.user}</div>
-                                 <div>${data.text}</div>`;
+                div.innerHTML = `<div style="font-size:9px; opacity:0.7;">${data.user}</div><div>${data.text}</div>`;
                 document.getElementById('messages').appendChild(div);
                 document.getElementById('messages').scrollTop = document.getElementById('messages').scrollHeight;
             }
+        });
+        // Escucha si alguien borra (Botón de Pánico)
+        ref.on('value', snap => {
+            if(!snap.exists()) { document.getElementById('messages').innerHTML = ''; }
         });
     }
 
     function sendMsg() {
         const i = document.getElementById('msg-input');
         if(!i.value.trim()) return;
-        db.ref('rooms/' + currentRoom).push({user:currentUser, text:i.value.trim(), timestamp:Date.now()});
+        db.ref('rooms/' + currentRoom).push({ user: currentUser, text: i.value.trim() });
         i.value = '';
     }
 
-    function nukeChat() { if(confirm("¿VACIAR BÚNKER?")) db.ref('rooms/' + currentRoom).remove(); }
+    // BOTÓN DE PÁNICO: Borra la base de datos real
+    function nukeChat() {
+        if(confirm("¿BORRADO TOTAL?")) {
+            db.ref('rooms/' + currentRoom).remove();
+        }
+    }
+
+    // LIMPIEZA AL SALIR: Borra la pantalla al cerrar
+    window.addEventListener('beforeunload', () => {
+        document.getElementById('messages').innerHTML = '';
+    });
 </script>
 </body>
 </html>
