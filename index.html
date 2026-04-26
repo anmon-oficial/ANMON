@@ -3,54 +3,59 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>ANMON Enterprise</title>
+    <title>ANMON | Búnker</title>
     <style>
-        :root { --accent: #007aff; --bg: #000; --msg-them: #2c2c2e; }
+        :root { --blue: #007aff; --bg: #000; --card: #1c1c1e; --msg-them: #2c2c2e; }
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; font-family: -apple-system, sans-serif; }
         body { background: var(--bg); color: #fff; margin: 0; height: 100dvh; display: flex; flex-direction: column; overflow: hidden; }
 
+        /* ACCESO EMPRESARIAL */
         #login-screen { position: fixed; inset: 0; background: #000; z-index: 1000; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 30px; }
-        .logo { font-size: 38px; font-weight: 800; letter-spacing: 10px; margin-bottom: 5px; }
-        .sub { color: var(--accent); font-size: 10px; letter-spacing: 5px; font-weight: 800; text-transform: uppercase; margin-bottom: 40px; }
+        .logo { font-size: 38px; font-weight: 800; letter-spacing: 12px; margin: 0; }
+        .sub { color: var(--blue); font-size: 10px; letter-spacing: 5px; font-weight: 800; text-transform: uppercase; margin-top: 8px; margin-bottom: 40px; }
         
-        input { width: 100%; max-width: 320px; background: #111; border: 1px solid #333; color: #fff; padding: 18px; border-radius: 12px; margin-bottom: 10px; font-size: 16px; text-align: center; outline: none; }
-        .btn-access { width: 100%; max-width: 320px; background: #fff; color: #000; border: none; padding: 18px; border-radius: 12px; font-weight: 900; font-size: 14px; cursor: pointer; text-transform: uppercase; margin-top: 10px; }
+        .input-box { width: 100%; max-width: 320px; }
+        input { width: 100%; background: #111; border: 1px solid #333; color: #fff; padding: 18px; border-radius: 14px; margin-bottom: 12px; font-size: 16px; text-align: center; outline: none; }
+        .btn-access { width: 100%; background: #fff; color: #000; border: none; padding: 18px; border-radius: 14px; font-weight: 900; font-size: 14px; cursor: pointer; text-transform: uppercase; }
         
         .mail-link { margin-top: 40px; color: #666; font-size: 12px; text-decoration: none; font-weight: 700; letter-spacing: 1px; }
-        .mail-link span { color: var(--accent); }
+        .mail-link span { color: var(--blue); }
 
+        /* INTERFAZ DE CHAT */
         #chat-screen { display: none; flex-direction: column; height: 100%; }
         #header { padding: 50px 20px 15px; background: #111; border-bottom: 1px solid #222; display: flex; justify-content: space-between; align-items: center; }
         #messages { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 12px; }
         
-        .msg { padding: 14px 18px; border-radius: 20px; max-width: 85%; font-size: 15px; line-height: 1.4; }
-        .msg.me { align-self: flex-end; background: var(--accent); color: #fff; border-bottom-right-radius: 4px; }
+        .msg { padding: 14px 18px; border-radius: 20px; max-width: 80%; font-size: 15px; line-height: 1.4; }
+        .msg.me { align-self: flex-end; background: var(--blue); color: #fff; border-bottom-right-radius: 4px; }
         .msg.them { align-self: flex-start; background: var(--msg-them); color: #fff; border-bottom-left-radius: 4px; }
 
         #input-area { padding: 15px; background: #111; display: flex; gap: 10px; align-items: center; padding-bottom: calc(15px + env(safe-area-inset-bottom)); }
-        #msg-input { flex: 1; background: var(--msg-them); border: none; padding: 14px 20px; border-radius: 25px; color: #fff; font-size: 16px; outline: none; }
-        #send-btn { width: 45px; height: 45px; background: var(--accent); color: #fff; border-radius: 50%; border: none; font-weight: bold; }
+        #msg-input { flex: 1; background: var(--msg-them); border: none; padding: 14px 22px; border-radius: 25px; color: #fff; font-size: 16px; outline: none; }
+        #send-btn { width: 48px; height: 48px; background: var(--blue); color: #fff; border-radius: 50%; border: none; font-weight: bold; font-size: 20px; }
     </style>
 </head>
 <body>
     <div id="login-screen">
         <div class="logo">ANMON</div>
         <div class="sub">Bunker Digital</div>
-        <input type="text" id="user-input" placeholder="OPERADOR">
-        <input type="text" id="room-input" placeholder="ID BÚNKER">
-        <input type="password" id="pin-input" placeholder="PIN SEGURIDAD">
-        <button class="btn-access" onclick="login()">AUTENTICAR</button>
+        <div class="input-box">
+            <input type="text" id="user-input" placeholder="OPERADOR">
+            <input type="text" id="room-input" placeholder="BÚNKER ID">
+            <input type="password" id="pin-input" placeholder="PIN SEGURIDAD">
+            <button class="btn-access" onclick="login()">AUTENTICAR</button>
+        </div>
         <a href="mailto:anmon@proton.me" class="mail-link">SOLICITAR PIN: <span>ANMON@PROTON.ME</span></a>
     </div>
 
     <div id="chat-screen">
         <div id="header">
-            <div id="room-display" style="font-size:11px; font-weight:900; letter-spacing:2px;">SALA: --</div>
-            <div onclick="location.reload()" style="font-size:10px; color:#666; font-weight:800; cursor:pointer;">CERRAR</div>
+            <div id="room-display" style="font-size:11px; font-weight:900; letter-spacing:2px; color:var(--blue);">CONEXIÓN SEGURA</div>
+            <div onclick="location.reload()" style="font-size:10px; color:#555; font-weight:800; cursor:pointer;">CERRAR</div>
         </div>
         <div id="messages"></div>
         <div id="input-area">
-            <input type="text" id="msg-input" placeholder="Mensaje..." autocomplete="off">
+            <input type="text" id="msg-input" placeholder="Escribir mensaje..." autocomplete="off">
             <button id="send-btn" onclick="sendMsg()">></button>
         </div>
     </div>
@@ -74,8 +79,6 @@
             if(snap.exists()){
                 document.getElementById('login-screen').style.display = 'none';
                 document.getElementById('chat-screen').style.display = 'flex';
-                document.getElementById('room-display').innerText = "SALA: " + currentRoom.toUpperCase();
-                
                 const chatRef = ref(db, 'rooms/' + currentRoom);
                 onChildAdded(chatRef, (d) => {
                     const m = d.val();
