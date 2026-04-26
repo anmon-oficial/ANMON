@@ -5,66 +5,191 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>ANMON | BÚNKER</title>
     <style>
-        :root { --accent: #00f3ff; --bg: #000; --panel: #1c1c1e; }
+        :root { 
+            --bg: #121212; 
+            --panel: #1c1c1e; 
+            --silver: #c0c0c0; 
+            --success-glow: #00ff41; 
+            --accent: #00f3ff;
+            --line-me: #0052cc;
+            --line-them: #2c2c2e;
+            --panic: #ff3b30;
+        }
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         body { 
-            background: var(--bg); color: #fff; margin: 0; padding: 0;
-            font-family: -apple-system, BlinkMacSystemFont, sans-serif;
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
-            height: 100vh; width: 100vw; overflow: hidden;
+            background: var(--bg); color: #fff; margin: 0; 
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", sans-serif;
+            height: 100dvh; width: 100vw; overflow: hidden;
         }
-        .header { text-align: center; margin-bottom: 50px; }
-        .header h1 { font-size: 50px; font-weight: 900; letter-spacing: 12px; margin: 0; }
-        .header .tag { color: var(--accent); font-size: 13px; letter-spacing: 6px; font-weight: 800; text-transform: uppercase; margin-top: 10px; }
-        .auth-form { width: 100%; max-width: 340px; padding: 0 20px; }
-        input { 
+
+        /* PANTALLA DE ACCESO */
+        #login-screen {
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            height: 100%; width: 100%; padding: 20px;
+        }
+        .logo-box { text-align: center; margin-bottom: 40px; }
+        .shield { font-size: 50px; color: var(--silver); filter: drop-shadow(0 0 10px rgba(192,192,192,0.4)); display: block; margin-bottom: 5px; }
+        .logo-text { font-size: 45px; font-weight: 900; letter-spacing: 12px; margin: 0; }
+        .logo-text .white { color: #ffffff; }
+        .logo-text .gray { color: #636366; }
+        .tag { color: var(--accent); font-size: 11px; letter-spacing: 6px; font-weight: 800; text-transform: uppercase; margin-top: 8px; opacity: 0.8; }
+
+        .auth-form { width: 100%; max-width: 340px; }
+        input.login-input { 
             background: var(--panel); border: 1px solid #2c2c2e; color: #fff; 
             padding: 22px; margin-bottom: 12px; width: 100%; border-radius: 20px; 
             text-align: center; font-size: 16px; font-weight: 600; outline: none;
         }
-        input::placeholder { color: #636366; }
         .btn-access { 
             background: #fff; color: #000; border: none; padding: 22px; 
-            width: 100%; border-radius: 20px; font-weight: 900; font-size: 15px; 
-            text-transform: uppercase; letter-spacing: 2px; margin-top: 15px;
+            width: 100%; border-radius: 18px; font-weight: 900; font-size: 15px; 
+            text-transform: uppercase; letter-spacing: 1px; margin-top: 15px;
+            animation: green-glow 2s infinite linear; cursor: pointer;
         }
+        @keyframes green-glow {
+            0%, 100% { box-shadow: 0 0 5px var(--success-glow); }
+            50% { box-shadow: 0 0 20px var(--success-glow); }
+        }
+        .footer-mail { margin-top: 40px; font-size: 11px; color: #48484a; letter-spacing: 1px; text-decoration: none; font-weight: 700; }
+
+        /* PANTALLA DE CHAT (OCULTA INICIALMENTE) */
+        #chat-screen { display: none; flex-direction: column; height: 100%; width: 100%; background: var(--bg); }
+        
+        #header { 
+            padding: env(safe-area-inset-top, 20px) 20px 15px; 
+            background: #1a1a1a; border-bottom: 1px solid #222; 
+            display: flex; justify-content: space-between; align-items: center; 
+        }
+        .room-title { font-weight: 800; letter-spacing: 2px; font-size: 12px; color: #636366; text-transform: uppercase; }
+
+        .panic-light { 
+            width: 20px; height: 20px; background: var(--panic); border-radius: 50%; 
+            box-shadow: 0 0 10px var(--panic); animation: alarm 1.2s infinite; cursor: pointer;
+        }
+        @keyframes alarm { 
+            0%, 100% { opacity: 1; transform: scale(1); } 
+            50% { opacity: 0.4; transform: scale(0.95); box-shadow: 0 0 20px var(--panic); } 
+        }
+
+        #messages { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 10px; }
+        .msg { max-width: 80%; padding: 12px 16px; border-radius: 18px; font-size: 16px; line-height: 1.4; color: #fff; }
+        .msg.me { align-self: flex-end; background: var(--line-me); border-bottom-right-radius: 4px; }
+        .msg.them { align-self: flex-start; background: var(--line-them); border-bottom-left-radius: 4px; }
+        .u-tag { font-size: 10px; font-weight: 800; color: var(--accent); margin-bottom: 4px; text-transform: uppercase; }
+
+        #input-bar { 
+            background: #1a1a1a; 
+            padding: 15px 15px calc(15px + env(safe-area-inset-bottom, 0px)); 
+            display: flex; gap: 10px; border-top: 1px solid #222; 
+        }
+        #m-input { flex: 1; background: #2c2c2e; border: none; border-radius: 25px; padding: 14px 20px; color: #fff; font-size: 16px; outline: none; }
+        #send-btn { background: var(--accent); color: #000; border: none; width: 48px; height: 48px; border-radius: 50%; font-weight: 900; cursor: pointer; }
     </style>
 </head>
 <body>
-    <div class="header">
-        <h1>ANMON</h1>
-        <div class="tag">Bunker Digital</div>
+
+    <div id="login-screen">
+        <div class="logo-box">
+            <span class="shield">🛡️</span>
+            <h1 class="logo-text"><span class="white">AN</span><span class="gray">MON</span></h1>
+            <div class="tag">Bunker Digital</div>
+        </div>
+        <div class="auth-form">
+            <input type="text" id="user-input" class="login-input" placeholder="USUARIO">
+            <input type="text" id="room-input" class="login-input" placeholder="ID BÚNKER">
+            <input type="password" id="pin-input" class="login-input" placeholder="PIN DE SEGURIDAD">
+            <button class="btn-access" onclick="login()">Autenticar Conexión</button>
+        </div>
+        <a href="mailto:nexo@anmon.com" class="footer-mail">OBTENER PIN: NEXO@ANMON.COM</a>
     </div>
-    <div class="auth-form">
-        <input type="text" id="user-input" placeholder="Nombre de Usuario">
-        <input type="text" id="room-input" placeholder="ID de Bunker">
-        <input type="password" id="pin-input" placeholder="PIN de Seguridad">
-        <button class="btn-access" onclick="login()">Autenticar Conexión</button>
+
+    <div id="chat-screen">
+        <div id="header">
+            <div id="room-display" class="room-title">BÚNKER ACTIVO</div>
+            <div class="panic-light" title="DEPURAR" onclick="nuke()"></div>
+        </div>
+        <div id="messages"></div>
+        <div id="input-bar">
+            <input type="text" id="m-input" placeholder="Escribir mensaje...">
+            <button id="send-btn" onclick="sendMsg()">></button>
+        </div>
     </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getDatabase, ref, get } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+        import { getDatabase, ref, get, push, onChildAdded, remove } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
-        const firebaseConfig = {
-            apiKey: "AIzaSyApduAcJs4QITtqQKeNe88WCNPu1iMswO0",
-            authDomain: "anmon-c2f58.firebaseapp.com",
-            databaseURL: "https://anmon-c2f58-default-rtdb.firebaseio.com",
-            projectId: "anmon-c2f58"
+        const firebaseConfig = { 
+            apiKey: "AIzaSyApduAcJs4QITtqQKeNe88WCNPu1iMswO0", 
+            databaseURL: "https://anmon-c2f58-default-rtdb.firebaseio.com" 
         };
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
 
+        let currentUser, currentRoom;
+
         window.login = async () => {
+            const u = document.getElementById('user-input').value.trim();
+            const r = document.getElementById('room-input').value.trim();
             const p = document.getElementById('pin-input').value.trim().toUpperCase();
-            if(!p) return;
+
+            if(!u || !r || !p) return;
+
+            // Verificamos el PIN
             const snap = await get(ref(db, 'valid_pins/' + p));
             if(snap.exists()) {
                 const data = snap.val();
-                if(data.expires && data.expires < Date.now()) { alert("PIN EXPIRADO"); }
-                else { alert("CONEXIÓN ESTABLECIDA"); /* Aquí redirigís al chat */ }
-            } else { alert("ACCESO DENEGADO"); }
+                if(data.expires && data.expires < Date.now()) {
+                    alert("PIN CADUCADO");
+                } else {
+                    // PIN válido: Cambiamos de pantalla
+                    currentUser = u;
+                    currentRoom = r.toLowerCase();
+                    document.getElementById('login-screen').style.display = 'none';
+                    document.getElementById('chat-screen').style.display = 'flex';
+                    document.getElementById('room-display').innerText = "BÚNKER: " + currentRoom;
+                    initChat();
+                }
+            } else {
+                alert("ACCESO DENEGADO");
+            }
         };
+
+        function initChat() {
+            const chatRef = ref(db, 'rooms/' + currentRoom);
+            onChildAdded(chatRef, (snap) => {
+                const m = snap.val();
+                const div = document.createElement('div');
+                const isMe = m.user === currentUser;
+                div.className = `msg ${isMe ? 'me' : 'them'}`;
+                div.innerHTML = `<div class="u-tag">${m.user}</div><div>${m.text}</div>`;
+                document.getElementById('messages').appendChild(div);
+                document.getElementById('messages').scrollTop = document.getElementById('messages').scrollHeight;
+            });
+        }
+
+        window.sendMsg = () => {
+            const input = document.getElementById('m-input');
+            if(!input.value.trim()) return;
+            push(ref(db, 'rooms/' + currentRoom), {
+                user: currentUser,
+                text: input.value.trim(),
+                ts: Date.now()
+            });
+            input.value = '';
+        };
+
+        window.nuke = () => {
+            if(confirm("¿DEPURAR HISTORIAL COMPLETO?")) {
+                remove(ref(db, 'rooms/' + currentRoom));
+                document.getElementById('messages').innerHTML = '';
+            }
+        };
+
+        // Enviar con Enter
+        document.getElementById('m-input')?.addEventListener('keypress', (e) => {
+            if(e.key === 'Enter') sendMsg();
+        });
     </script>
 </body>
 </html>
