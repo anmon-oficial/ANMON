@@ -7,24 +7,24 @@
     <style>
         :root { 
             --bg-login: #121212; 
-            --bg-chat: #1c1c1e; /* Gris Búnker, no negro */
+            --bg-chat: #F2F2F7; /* Gris claro delicado */
             --panel: #252527; 
             --silver: #c0c0c0; 
             --success-glow: #00ff41; 
-            --accent: #00f3ff;
+            --accent: #007AFF; /* Azul iOS para mejor contraste en claro */
             --line-me: #0052cc;
-            --line-them: #3a3a3c;
+            --line-them: #ffffff; /* Burbujas blancas sobre fondo gris */
             --panic: #ff3b30;
         }
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         body { 
-            background: var(--bg-login); color: #fff; margin: 0; 
-            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", sans-serif;
+            background: var(--bg-login); color: #000; margin: 0; 
+            font-family: -apple-system, BlinkMacSystemFont, sans-serif;
             height: 100dvh; width: 100vw; overflow: hidden;
         }
 
-        /* LOGIN SCREEN */
-        #login-screen { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; width: 100%; padding: 20px; }
+        /* LOGIN SCREEN (Mantiene su estética oscura de entrada) */
+        #login-screen { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; width: 100%; padding: 20px; color: #fff; }
         .logo-box { text-align: center; margin-bottom: 40px; }
         .shield { font-size: 50px; color: var(--silver); filter: drop-shadow(0 0 10px rgba(192,192,192,0.4)); display: block; margin-bottom: 5px; }
         .logo-text { font-size: 45px; font-weight: 900; letter-spacing: 12px; margin: 0; display: flex; justify-content: center; }
@@ -44,40 +44,47 @@
             animation: green-glow 2s infinite linear; cursor: pointer;
         }
         @keyframes green-glow { 0%, 100% { box-shadow: 0 0 5px var(--success-glow); } 50% { box-shadow: 0 0 20px var(--success-glow); } }
-        .footer-mail { margin-top: 40px; font-size: 12px; color: rgba(255,255,255,0.7); letter-spacing: 1px; text-decoration: none; font-weight: 700; text-transform: uppercase; border-bottom: 1px solid rgba(255,255,255,0.2); padding-bottom: 4px; }
+        
+        /* MAIL CORREGIDO */
+        .footer-mail { 
+            margin-top: 40px; font-size: 13px; color: #ffffff; 
+            letter-spacing: 1px; text-decoration: none; font-weight: 700; 
+            text-transform: uppercase; border-bottom: 1px solid #00f3ff; 
+            padding-bottom: 4px;
+        }
 
-        /* CHAT SCREEN */
+        /* CHAT SCREEN (FONDO CLARO) */
         #chat-screen { display: none; flex-direction: column; height: 100%; width: 100%; background: var(--bg-chat); }
-        #header { padding: env(safe-area-inset-top, 20px) 20px 15px; background: #111; border-bottom: 1px solid #333; display: flex; justify-content: space-between; align-items: center; }
-        .room-title { font-weight: 800; letter-spacing: 2px; font-size: 11px; color: #a1a1aa; text-transform: uppercase; }
+        #header { padding: env(safe-area-inset-top, 20px) 20px 15px; background: #ffffff; border-bottom: 1px solid #d1d1d6; display: flex; justify-content: space-between; align-items: center; }
+        .room-title { font-weight: 800; letter-spacing: 2px; font-size: 11px; color: #8e8e93; text-transform: uppercase; }
 
         .panic-box { display: flex; align-items: center; gap: 8px; cursor: pointer; }
         .panic-text { color: var(--panic); font-size: 10px; font-weight: 900; letter-spacing: 1px; }
-        .panic-light { width: 14px; height: 14px; background: var(--panic); border-radius: 50%; box-shadow: 0 0 10px var(--panic); animation: alarm 1s infinite; }
-        @keyframes alarm { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
+        .panic-light { width: 14px; height: 14px; background: var(--panic); border-radius: 50%; box-shadow: 0 0 10px rgba(255, 59, 48, 0.4); animation: alarm 1s infinite; }
+        @keyframes alarm { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.4; transform: scale(0.9); } }
 
         #messages { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 12px; }
-        .msg { max-width: 80%; padding: 12px 16px; border-radius: 18px; font-size: 16px; line-height: 1.4; position: relative; }
-        .msg.me { align-self: flex-end; background: var(--line-me); border-bottom-right-radius: 4px; }
-        .msg.them { align-self: flex-start; background: var(--line-them); border-bottom-left-radius: 4px; }
+        .msg { max-width: 80%; padding: 12px 16px; border-radius: 18px; font-size: 16px; line-height: 1.4; position: relative; box-shadow: 0 1px 2px rgba(0,0,0,0.05); }
+        .msg.me { align-self: flex-end; background: var(--line-me); color: #fff; border-bottom-right-radius: 4px; padding-bottom: 22px; }
+        .msg.them { align-self: flex-start; background: var(--line-them); color: #000; border-bottom-left-radius: 4px; border: 1px solid #e5e5ea; }
         
-        .u-tag { font-size: 10px; font-weight: 800; color: var(--accent); margin-bottom: 4px; text-transform: uppercase; display: block; }
+        .u-tag { font-size: 10px; font-weight: 800; color: #8e8e93; margin-bottom: 4px; text-transform: uppercase; display: block; }
+        .msg.me .u-tag { color: rgba(255,255,255,0.7); }
         
-        /* TILDES DE ENVIADO */
-        .status-check { font-size: 10px; color: var(--accent); position: absolute; bottom: 6px; right: 10px; font-weight: bold; }
+        .status-check { font-size: 10px; color: #00f3ff; position: absolute; bottom: 6px; right: 10px; font-weight: bold; }
 
-        /* INPUT BAR - DISEÑO PULIDO */
+        /* BARRA DE ESCRITURA CLARA */
         #input-bar { 
-            background: #111; 
+            background: #ffffff; 
             padding: 12px 15px calc(12px + env(safe-area-inset-bottom, 0px)); 
-            display: flex; gap: 10px; border-top: 1px solid #333; align-items: center;
+            display: flex; gap: 10px; border-top: 1px solid #d1d1d6; align-items: center;
         }
         #m-input { 
-            flex: 1; background: #2c2c2e; border: 1px solid #444; 
-            border-radius: 25px; padding: 12px 18px; color: #fff; font-size: 16px; outline: none; 
+            flex: 1; background: #f2f2f7; border: 1px solid #d1d1d6; 
+            border-radius: 25px; padding: 12px 18px; color: #000; font-size: 16px; outline: none; 
         }
         #send-btn { 
-            background: var(--accent); color: #000; border: none; 
+            background: var(--line-me); color: #fff; border: none; 
             width: 40px; height: 40px; border-radius: 50%; 
             display: flex; align-items: center; justify-content: center;
             font-size: 18px; cursor: pointer; flex-shrink: 0;
@@ -98,7 +105,7 @@
             <input type="password" id="pin-input" class="login-input" placeholder="PIN DE SEGURIDAD">
             <button class="btn-access" onclick="login()">Autenticar Conexión</button>
         </div>
-        <a href="mailto:nexo@anmon.com" class="footer-mail">OBTENER PIN: NEXO@ANMON.COM</a>
+        <a href="mailto:nexo.seguro01@proton.me" class="footer-mail">PIN: nexo.seguro01@proton.me</a>
     </div>
 
     <div id="chat-screen">
@@ -158,10 +165,7 @@
                 const div = document.createElement('div');
                 const isMe = m.user === currentUser;
                 div.className = `msg ${isMe ? 'me' : 'them'}`;
-                
-                // Agregamos tilde de enviado solo en mis mensajes
                 const check = isMe ? '<span class="status-check">✓✓</span>' : '';
-                
                 div.innerHTML = `<span class="u-tag">${m.user}</span><div>${m.text}</div>${check}`;
                 document.getElementById('messages').appendChild(div);
                 document.getElementById('messages').scrollTop = document.getElementById('messages').scrollHeight;
