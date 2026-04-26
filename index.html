@@ -31,12 +31,12 @@
         
         input { width: 100%; max-width: 320px; background: #1c1c1e; border: 1px solid #333; color: #fff; padding: 18px; border-radius: 14px; margin-bottom: 12px; font-size: 16px; text-align: center; outline: none; }
         .btn-access { width: 100%; max-width: 320px; background: #fff; color: #000; border: none; padding: 18px; border-radius: 14px; font-weight: 800; cursor: pointer; font-size: 15px; }
-        
-        /* ESTILO DEL MAIL DE SOPORTE */
-        .support-link { margin-top: 30px; font-size: 11px; color: #666; text-decoration: none; letter-spacing: 1px; }
-        .support-link span { color: var(--accent); font-weight: bold; }
 
-        /* CHAT INTERFACE */
+        /* MAIL DE SOPORTE AGREGADO */
+        .support-mail { margin-top: 30px; font-size: 11px; color: #666; text-decoration: none; letter-spacing: 1px; }
+        .support-mail span { color: var(--accent); font-weight: bold; }
+
+        /* CHAT INTERFACE - ESTILO ORIGINAL TIPO WHATSAPP */
         #chat-screen { display: none; flex-direction: column; height: 100%; width: 100%; background: var(--bg-chat); }
         header { padding: 50px 20px 15px; background: #000; color: #fff; display: flex; justify-content: space-between; align-items: center; }
         #messages { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 12px; }
@@ -64,7 +64,7 @@
         <input type="text" id="r-input" placeholder="ID BÚNKER">
         <input type="password" id="p-input" placeholder="PIN DE ACCESO">
         <button class="btn-access" onclick="login()">INICIAR SESIÓN</button>
-        <a href="mailto:nexo.seguro01@proton.me" class="support-link">SOLICITAR ACCESO: <span>nexo.seguro01@proton.me</span></a>
+        <a href="mailto:nexo.seguro01@proton.me" class="support-mail">SOLICITAR PIN: <span>nexo.seguro01@proton.me</span></a>
     </div>
 
     <div id="chat-screen">
@@ -117,7 +117,7 @@
         function initChat() {
             const messagesDiv = document.getElementById('messages');
             
-            // Sincronización de purga para que se borre en todos los dispositivos
+            // Sincronización de purga para todos
             onValue(ref(db, 'rooms/' + currentRoom), (snap) => {
                 if (!snap.exists()) {
                     messagesDiv.innerHTML = '';
