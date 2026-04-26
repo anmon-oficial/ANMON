@@ -15,23 +15,23 @@
         /* LOGIN REDISEÑADO */
         #login-screen { 
             position: fixed; inset: 0; 
-            background: linear-gradient(135deg, #0f0f0f 0%, #000000 100%); 
+            background: radial-gradient(circle at center, #1a1a1a 0%, #000 100%); 
             z-index: 1000; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 20px; 
         }
         
-        /* LOGO NOVEDOSO */
+        /* LOGO GLASSMORPHISM */
         .logo-container { text-align: center; margin-bottom: 45px; }
         .logo-box {
-            background: rgba(255, 255, 255, 0.05);
-            padding: 25px 40px;
-            border-radius: 20px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px);
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            background: rgba(255, 255, 255, 0.03);
+            padding: 30px 45px;
+            border-radius: 24px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(15px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.6);
         }
         .logo { 
             font-size: 52px; font-weight: 900; letter-spacing: 14px; 
-            color: #ffffff; /* ANMON EN BLANCO */
+            color: #ffffff;
             margin: 0; display: flex; align-items: center; justify-content: center; gap: 15px;
         }
         .sub-logo { 
@@ -40,29 +40,32 @@
         }
         
         .login-input { 
-            background: rgba(255,255,255,0.07); border: 1px solid #333; color: #fff; 
+            background: rgba(255,255,255,0.06); border: 1px solid #333; color: #fff; 
             padding: 18px; margin-bottom: 12px; width: 100%; max-width: 320px; 
-            border-radius: 12px; text-align: center; font-size: 18px; outline: none; 
+            border-radius: 12px; text-align: center; font-size: 17px; outline: none;
+            transition: all 0.3s ease;
         }
+        .login-input:focus { border-color: var(--accent); background: rgba(255,255,255,0.1); }
         
+        /* BOTÓN PROFESIONAL CON RESPIRACIÓN DE NEÓN */
         .neon-blink { 
             background: var(--accent); color: #000; border: none; 
             padding: 20px; width: 100%; max-width: 320px; border-radius: 12px; 
-            font-weight: 900; font-size: 16px; cursor: pointer; 
-            margin-top: 10px; box-shadow: 0 4px 20px rgba(0, 243, 255, 0.4);
-            text-transform: uppercase;
+            font-weight: 900; font-size: 15px; cursor: pointer; 
+            margin-top: 15px; text-transform: uppercase; letter-spacing: 2px;
+            box-shadow: 0 0 20px rgba(0, 243, 255, 0.5);
+            animation: breathe 3s infinite ease-in-out;
+        }
+
+        @keyframes breathe {
+            0%, 100% { box-shadow: 0 0 10px rgba(0, 243, 255, 0.3); transform: scale(1); }
+            50% { box-shadow: 0 0 30px rgba(0, 243, 255, 0.7); transform: scale(1.01); }
         }
 
         /* MAIL DESTACADO */
-        .mail-box {
-            margin-top: 50px;
-            text-align: center;
-            padding: 15px;
-            border-top: 1px solid #222;
-            width: 80%;
-        }
-        .mail-info { color: #888; font-size: 14px; letter-spacing: 1px; }
-        .mail-info b { color: #ffffff; font-size: 16px; display: block; margin-top: 5px; text-decoration: underline; }
+        .mail-box { margin-top: 60px; text-align: center; width: 85%; }
+        .mail-info { color: #666; font-size: 13px; letter-spacing: 1px; }
+        .mail-info b { color: #fff; font-size: 15px; display: block; margin-top: 8px; font-weight: 600; }
 
         /* CHAT */
         #chat-screen { display: none; flex-direction: column; height: 100dvh; width: 100vw; background: var(--bg-chat); }
@@ -95,7 +98,7 @@
     <input type="text" id="room-input" class="login-input" placeholder="ID de Bunker">
     <input type="password" id="pin-input" class="login-input" placeholder="PIN de Seguridad">
     
-    <button class="neon-blink" onclick="login()">Iniciar Conexión Segura</button>
+    <button class="neon-blink" onclick="login()">AUTENTICAR CONEXIÓN</button>
     
     <div class="mail-box">
         <div class="mail-info">¿No tienes acceso? Solicítalo en:<br><b>nexo.seguro01@proton.me</b></div>
