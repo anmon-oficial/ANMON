@@ -7,13 +7,13 @@
     <style>
         :root { 
             --bg-login: #121212; 
-            --bg-chat: #F2F2F7; /* Gris claro delicado */
+            --bg-chat: #F2F2F7; 
             --panel: #252527; 
             --silver: #c0c0c0; 
             --success-glow: #00ff41; 
-            --accent: #007AFF; /* Azul iOS para mejor contraste en claro */
+            --accent: #007AFF; 
             --line-me: #0052cc;
-            --line-them: #ffffff; /* Burbujas blancas sobre fondo gris */
+            --line-them: #ffffff; 
             --panic: #ff3b30;
         }
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
@@ -23,7 +23,7 @@
             height: 100dvh; width: 100vw; overflow: hidden;
         }
 
-        /* LOGIN SCREEN (Mantiene su estética oscura de entrada) */
+        /* LOGIN SCREEN */
         #login-screen { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; width: 100%; padding: 20px; color: #fff; }
         .logo-box { text-align: center; margin-bottom: 40px; }
         .shield { font-size: 50px; color: var(--silver); filter: drop-shadow(0 0 10px rgba(192,192,192,0.4)); display: block; margin-bottom: 5px; }
@@ -45,18 +45,21 @@
         }
         @keyframes green-glow { 0%, 100% { box-shadow: 0 0 5px var(--success-glow); } 50% { box-shadow: 0 0 20px var(--success-glow); } }
         
-        /* MAIL CORREGIDO */
+        /* MAIL CORREGIDO (minúsculas) */
         .footer-mail { 
             margin-top: 40px; font-size: 13px; color: #ffffff; 
             letter-spacing: 1px; text-decoration: none; font-weight: 700; 
-            text-transform: uppercase; border-bottom: 1px solid #00f3ff; 
-            padding-bottom: 4px;
+            border-bottom: 1px solid #00f3ff; padding-bottom: 4px;
         }
 
-        /* CHAT SCREEN (FONDO CLARO) */
+        /* CHAT SCREEN */
         #chat-screen { display: none; flex-direction: column; height: 100%; width: 100%; background: var(--bg-chat); }
-        #header { padding: env(safe-area-inset-top, 20px) 20px 15px; background: #ffffff; border-bottom: 1px solid #d1d1d6; display: flex; justify-content: space-between; align-items: center; }
+        #header { padding: env(safe-area-inset-top, 20px) 20px 10px; background: #ffffff; border-bottom: 1px solid #d1d1d6; }
+        .header-top { display: flex; justify-content: space-between; align-items: center; }
         .room-title { font-weight: 800; letter-spacing: 2px; font-size: 11px; color: #8e8e93; text-transform: uppercase; }
+        
+        /* STATUS ESCRIBIENDO */
+        #typing-status { font-size: 10px; color: #007AFF; font-weight: 700; height: 14px; margin-top: 2px; transition: opacity 0.3s; opacity: 0; }
 
         .panic-box { display: flex; align-items: center; gap: 8px; cursor: pointer; }
         .panic-text { color: var(--panic); font-size: 10px; font-weight: 900; letter-spacing: 1px; }
@@ -70,10 +73,9 @@
         
         .u-tag { font-size: 10px; font-weight: 800; color: #8e8e93; margin-bottom: 4px; text-transform: uppercase; display: block; }
         .msg.me .u-tag { color: rgba(255,255,255,0.7); }
-        
         .status-check { font-size: 10px; color: #00f3ff; position: absolute; bottom: 6px; right: 10px; font-weight: bold; }
 
-        /* BARRA DE ESCRITURA CLARA */
+        /* BARRA DE ESCRITURA */
         #input-bar { 
             background: #ffffff; 
             padding: 12px 15px calc(12px + env(safe-area-inset-bottom, 0px)); 
@@ -105,16 +107,19 @@
             <input type="password" id="pin-input" class="login-input" placeholder="PIN DE SEGURIDAD">
             <button class="btn-access" onclick="login()">Autenticar Conexión</button>
         </div>
-        <a href="mailto:nexo.seguro01@proton.me" class="footer-mail">PIN: nexo.seguro01@proton.me</a>
+        <a href="mailto:nexo.seguro01@proton.me" class="footer-mail">pin: nexo.seguro01@proton.me</a>
     </div>
 
     <div id="chat-screen">
         <div id="header">
-            <div id="room-display" class="room-title">BÚNKER ACTIVO</div>
-            <div class="panic-box" onclick="nuke()">
-                <span class="panic-text">PURGAR BÚNKER</span>
-                <div class="panic-light"></div>
+            <div class="header-top">
+                <div id="room-display" class="room-title">BÚNKER ACTIVO</div>
+                <div class="panic-box" onclick="nuke()">
+                    <span class="panic-text">PURGAR BÚNKER</span>
+                    <div class="panic-light"></div>
+                </div>
             </div>
+            <div id="typing-status"></div>
         </div>
         <div id="messages"></div>
         <div id="input-bar">
@@ -125,7 +130,7 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getDatabase, ref, get, push, onChildAdded, remove } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+        import { getDatabase, ref, get, push, onChildAdded, remove, set, onValue } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
         const firebaseConfig = { 
             apiKey: "AIzaSyApduAcJs4QITtqQKeNe88WCNPu1iMswO0", 
@@ -145,22 +150,18 @@
 
             const snap = await get(ref(db, 'valid_pins/' + p));
             if(snap.exists()) {
-                const data = snap.val();
-                if(data.expires && data.expires < Date.now()) {
-                    alert("PIN CADUCADO");
-                } else {
-                    currentUser = u;
-                    currentRoom = r.toLowerCase();
-                    document.getElementById('login-screen').style.display = 'none';
-                    document.getElementById('chat-screen').style.display = 'flex';
-                    document.getElementById('room-display').innerText = "BÚNKER: " + currentRoom;
-                    initChat();
-                }
+                currentUser = u;
+                currentRoom = r.toLowerCase();
+                document.getElementById('login-screen').style.display = 'none';
+                document.getElementById('chat-screen').style.display = 'flex';
+                document.getElementById('room-display').innerText = "BÚNKER: " + currentRoom;
+                initChat();
             } else { alert("ACCESO DENEGADO"); }
         };
 
         function initChat() {
-            onChildAdded(ref(db, 'rooms/' + currentRoom), (snap) => {
+            // Escuchar mensajes
+            onChildAdded(ref(db, 'rooms/' + currentRoom + '/messages'), (snap) => {
                 const m = snap.val();
                 const div = document.createElement('div');
                 const isMe = m.user === currentUser;
@@ -170,12 +171,42 @@
                 document.getElementById('messages').appendChild(div);
                 document.getElementById('messages').scrollTop = document.getElementById('messages').scrollHeight;
             });
+
+            // Escuchar quién escribe
+            onValue(ref(db, 'rooms/' + currentRoom + '/typing'), (snap) => {
+                const typingData = snap.val();
+                const statusDiv = document.getElementById('typing-status');
+                let typingUsers = [];
+                for (let user in typingData) {
+                    if (user !== currentUser && typingData[user] === true) {
+                        typingUsers.push(user);
+                    }
+                }
+                if (typingUsers.length > 0) {
+                    statusDiv.innerText = typingUsers.join(', ') + " está escribiendo...";
+                    statusDiv.style.opacity = "1";
+                } else {
+                    statusDiv.style.opacity = "0";
+                }
+            });
         }
+
+        // Detectar cuando el usuario escribe
+        let typingTimeout;
+        document.getElementById('m-input').addEventListener('input', () => {
+            if (!currentUser || !currentRoom) return;
+            set(ref(db, 'rooms/' + currentRoom + '/typing/' + currentUser), true);
+            clearTimeout(typingTimeout);
+            typingTimeout = setTimeout(() => {
+                set(ref(db, 'rooms/' + currentRoom + '/typing/' + currentUser), false);
+            }, 2000);
+        });
 
         window.sendMsg = () => {
             const input = document.getElementById('m-input');
             if(!input.value.trim()) return;
-            push(ref(db, 'rooms/' + currentRoom), { user: currentUser, text: input.value.trim(), ts: Date.now() });
+            set(ref(db, 'rooms/' + currentRoom + '/typing/' + currentUser), false);
+            push(ref(db, 'rooms/' + currentRoom + '/messages'), { user: currentUser, text: input.value.trim(), ts: Date.now() });
             input.value = '';
         };
 
