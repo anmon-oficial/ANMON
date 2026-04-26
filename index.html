@@ -4,172 +4,132 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>ANMON Enterprise</title>
-    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
     <style>
         :root { --accent: #00f3ff; --corporate-blue: #0052cc; --bg-chat: #f0f2f5; }
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; }
-        
         html, body { background: #000; margin: 0; padding: 0; height: 100%; width: 100%; overflow: hidden; }
 
-        /* LOGIN REDISEÑADO */
-        #login-screen { 
-            position: fixed; inset: 0; 
-            background: radial-gradient(circle at center, #1a1a1a 0%, #000 100%); 
-            z-index: 1000; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 20px; 
-        }
+        /* LOGIN PROFESIONAL */
+        #login-screen { position: fixed; inset: 0; background: radial-gradient(circle at center, #1a1a1a 0%, #000 100%); z-index: 1000; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 20px; }
+        .logo-box { background: rgba(255, 255, 255, 0.03); padding: 30px 45px; border-radius: 24px; border: 1px solid rgba(255, 255, 255, 0.08); backdrop-filter: blur(15px); text-align: center; margin-bottom: 40px; }
+        .logo { font-size: 52px; font-weight: 900; letter-spacing: 14px; color: #fff; margin: 0; display: flex; align-items: center; justify-content: center; gap: 15px; }
+        .sub-logo { color: var(--accent); font-size: 13px; letter-spacing: 7px; font-weight: 800; text-transform: uppercase; margin-top: 15px; }
         
-        /* LOGO GLASSMORPHISM */
-        .logo-container { text-align: center; margin-bottom: 45px; }
-        .logo-box {
-            background: rgba(255, 255, 255, 0.03);
-            padding: 30px 45px;
-            border-radius: 24px;
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            backdrop-filter: blur(15px);
-            box-shadow: 0 20px 40px rgba(0,0,0,0.6);
-        }
-        .logo { 
-            font-size: 52px; font-weight: 900; letter-spacing: 14px; 
-            color: #ffffff;
-            margin: 0; display: flex; align-items: center; justify-content: center; gap: 15px;
-        }
-        .sub-logo { 
-            color: var(--accent); font-size: 13px; letter-spacing: 7px; 
-            font-weight: 800; text-transform: uppercase; margin-top: 15px; 
-        }
-        
-        .login-input { 
-            background: rgba(255,255,255,0.06); border: 1px solid #333; color: #fff; 
-            padding: 18px; margin-bottom: 12px; width: 100%; max-width: 320px; 
-            border-radius: 12px; text-align: center; font-size: 17px; outline: none;
-            transition: all 0.3s ease;
-        }
-        .login-input:focus { border-color: var(--accent); background: rgba(255,255,255,0.1); }
-        
-        /* BOTÓN PROFESIONAL CON RESPIRACIÓN DE NEÓN */
-        .neon-blink { 
-            background: var(--accent); color: #000; border: none; 
-            padding: 20px; width: 100%; max-width: 320px; border-radius: 12px; 
-            font-weight: 900; font-size: 15px; cursor: pointer; 
-            margin-top: 15px; text-transform: uppercase; letter-spacing: 2px;
-            box-shadow: 0 0 20px rgba(0, 243, 255, 0.5);
-            animation: breathe 3s infinite ease-in-out;
-        }
+        .login-input { background: rgba(255,255,255,0.06); border: 1px solid #333; color: #fff; padding: 18px; margin-bottom: 12px; width: 100%; max-width: 320px; border-radius: 12px; text-align: center; font-size: 17px; outline: none; }
+        .neon-blink { background: var(--accent); color: #000; border: none; padding: 20px; width: 100%; max-width: 320px; border-radius: 12px; font-weight: 900; font-size: 15px; cursor: pointer; margin-top: 15px; text-transform: uppercase; letter-spacing: 2px; animation: breathe 3s infinite ease-in-out; }
+        @keyframes breathe { 0%, 100% { box-shadow: 0 0 10px rgba(0, 243, 255, 0.3); transform: scale(1); } 50% { box-shadow: 0 0 30px rgba(0, 243, 255, 0.7); transform: scale(1.01); } }
 
-        @keyframes breathe {
-            0%, 100% { box-shadow: 0 0 10px rgba(0, 243, 255, 0.3); transform: scale(1); }
-            50% { box-shadow: 0 0 30px rgba(0, 243, 255, 0.7); transform: scale(1.01); }
-        }
-
-        /* MAIL DESTACADO */
-        .mail-box { margin-top: 60px; text-align: center; width: 85%; }
-        .mail-info { color: #666; font-size: 13px; letter-spacing: 1px; }
-        .mail-info b { color: #fff; font-size: 15px; display: block; margin-top: 8px; font-weight: 600; }
+        .mail-info { margin-top: 60px; text-align: center; color: #666; font-size: 13px; }
+        .mail-info b { color: #fff; display: block; margin-top: 8px; }
 
         /* CHAT */
         #chat-screen { display: none; flex-direction: column; height: 100dvh; width: 100vw; background: var(--bg-chat); }
         #header { padding: env(safe-area-inset-top, 44px) 20px 15px; background: #fff; border-bottom: 1px solid #ddd; display: flex; justify-content: space-between; align-items: center; }
         #messages { flex: 1; overflow-y: auto; padding: 20px 15px; display: flex; flex-direction: column; gap: 10px; }
-        
-        .msg { padding: 12px 16px; border-radius: 18px; max-width: 85%; font-size: 18px; font-weight: 600; line-height: 1.4; position: relative; }
+        .msg { padding: 12px 16px; border-radius: 18px; max-width: 85%; font-size: 18px; font-weight: 600; position: relative; }
         .msg.me { align-self: flex-end; background: var(--corporate-blue); color: #fff; border-bottom-right-radius: 4px; }
         .msg.them { align-self: flex-start; background: #fff; color: #333; border-bottom-left-radius: 4px; border: 1px solid #e0e0e0; }
+        .meta { font-size: 11px; margin-top: 5px; display: flex; justify-content: flex-end; gap: 4px; opacity: 0.8; }
+        .check { color: var(--accent); }
 
-        .meta { font-size: 11px; margin-top: 5px; display: flex; justify-content: flex-end; align-items: center; gap: 4px; opacity: 0.8; }
-        .check { color: #00f3ff; font-weight: bold; }
-
-        #input-area { background: #fff; border-top: 1px solid #ddd; padding: 15px; display: flex; gap: 10px; align-items: center; }
-        #msg-input { flex: 1; background: #f0f2f5; border: 1px solid #ddd; color: #000; padding: 14px 18px; border-radius: 25px; font-size: 17px; outline: none; }
+        #input-area { background: #fff; border-top: 1px solid #ddd; padding: 15px; display: flex; gap: 10px; }
+        #msg-input { flex: 1; background: #f0f2f5; border: 1px solid #ddd; padding: 14px 18px; border-radius: 25px; font-size: 17px; outline: none; }
         #send-btn { width: 50px; height: 50px; background: var(--corporate-blue); color: #fff; border-radius: 50%; border: none; font-size: 20px; }
     </style>
 </head>
 <body>
 
 <div id="login-screen">
-    <div class="logo-container">
-        <div class="logo-box">
-            <div class="logo"><span>🔒</span>ANMON</div>
-            <div class="sub-logo">Bunker Digital</div>
-        </div>
+    <div class="logo-box">
+        <div class="logo"><span>🔒</span>ANMON</div>
+        <div class="sub-logo">Bunker Digital</div>
     </div>
-    
     <input type="text" id="user-input" class="login-input" placeholder="Nombre de Usuario">
     <input type="text" id="room-input" class="login-input" placeholder="ID de Bunker">
     <input type="password" id="pin-input" class="login-input" placeholder="PIN de Seguridad">
-    
     <button class="neon-blink" onclick="login()">AUTENTICAR CONEXIÓN</button>
-    
-    <div class="mail-box">
-        <div class="mail-info">¿No tienes acceso? Solicítalo en:<br><b>nexo.seguro01@proton.me</b></div>
-    </div>
+    <div class="mail-info">Solicite acceso en:<b>nexo.seguro01@proton.me</b></div>
 </div>
 
 <div id="chat-screen">
     <div id="header">
-        <div id="room-display" style="font-weight: 800; color: #333;">SALA</div>
+        <div id="room-display" style="font-weight: 800;">SALA</div>
         <div onclick="nukeChat()" style="font-size: 28px; cursor: pointer;">🧨</div>
     </div>
     <div id="messages"></div>
     <div id="input-area">
-        <input type="text" id="msg-input" placeholder="Escriba un mensaje..." autocomplete="off">
+        <input type="text" id="msg-input" placeholder="Mensaje..." autocomplete="off">
         <button id="send-btn" onclick="sendMsg()">></button>
     </div>
 </div>
 
-<script>
-    const firebaseConfig = { databaseURL: "https://anmon-c2f58-default-rtdb.firebaseio.com/" };
-    firebase.initializeApp(firebaseConfig);
-    const db = firebase.database();
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+    import { getDatabase, ref, get, push, onChildAdded, set } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+
+    const firebaseConfig = {
+        apiKey: "AIzaSyApduAcJs4QITtqQKeNe88WCNPu1iMswO0",
+        authDomain: "anmon-c2f58.firebaseapp.com",
+        databaseURL: "https://anmon-c2f58-default-rtdb.firebaseio.com",
+        projectId: "anmon-c2f58"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
     let currentUser, currentRoom;
 
-    async function login() {
+    window.login = async () => {
         currentUser = document.getElementById('user-input').value.trim().toUpperCase();
         currentRoom = document.getElementById('room-input').value.trim().toLowerCase();
-        const pin = document.getElementById('pin-input').value.trim();
+        const pin = document.getElementById('pin-input').value.trim().toUpperCase();
+
         if(!currentUser || !currentRoom || !pin) return;
 
-        const urlMotor = `https://motor-anmon.nexo-seguro01.workers.dev/acceso?pin=${pin}`;
-        try {
-            const res = await fetch(urlMotor);
-            if(await res.text() !== "ERROR") {
-                document.getElementById('login-screen').style.display = 'none';
-                document.getElementById('chat-screen').style.display = 'flex';
-                document.getElementById('room-display').innerText = "BÚNKER: " + currentRoom;
-                startChat();
-            } else { alert("PIN INVÁLIDO"); }
-        } catch (e) { alert("ERROR DE RED"); }
-    }
+        // VALIDACIÓN DIRECTA EN TU BASE DE DATOS
+        const pinRef = ref(db, 'valid_pins/' + pin);
+        const snapshot = await get(pinRef);
+
+        if (snapshot.exists()) {
+            document.getElementById('login-screen').style.display = 'none';
+            document.getElementById('chat-screen').style.display = 'flex';
+            document.getElementById('room-display').innerText = "BÚNKER: " + currentRoom;
+            startChat();
+        } else {
+            alert("ACCESO DENEGADO: PIN INVÁLIDO O VENCIDO");
+        }
+    };
 
     function startChat() {
-        const ref = db.ref('rooms/' + currentRoom);
-        ref.on('value', snap => { if (!snap.exists()) document.getElementById('messages').innerHTML = ''; });
-        ref.on('child_added', snap => {
-            const data = snap.val();
-            if(!document.getElementById('msg-' + snap.key)) {
-                const div = document.createElement('div');
-                div.id = 'msg-' + snap.key;
-                const isMe = data.user === currentUser;
-                div.className = 'msg ' + (isMe ? 'me' : 'them');
-                const time = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
-                div.innerHTML = `
-                    <div style="font-size:10px; margin-bottom:4px; opacity:0.8;">${data.user}</div>
-                    <div>${data.text}</div>
-                    <div class="meta">${time} ${isMe ? '<span class="check">✓✓</span>' : ''}</div>`;
-                document.getElementById('messages').appendChild(div);
-                document.getElementById('messages').scrollTop = document.getElementById('messages').scrollHeight;
-            }
+        const chatRef = ref(db, 'rooms/' + currentRoom);
+        onChildAdded(chatRef, (data) => {
+            const msg = data.val();
+            const div = document.createElement('div');
+            const isMe = msg.user === currentUser;
+            div.className = 'msg ' + (isMe ? 'me' : 'them');
+            const time = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+            div.innerHTML = `
+                <div style="font-size:10px; opacity:0.7;">${msg.user}</div>
+                <div>${msg.text}</div>
+                <div class="meta">${time} ${isMe ? '<span class="check">✓✓</span>' : ''}</div>`;
+            document.getElementById('messages').appendChild(div);
+            document.getElementById('messages').scrollTop = document.getElementById('messages').scrollHeight;
         });
     }
 
-    function sendMsg() {
-        const i = document.getElementById('msg-input');
-        if(!i.value.trim()) return;
-        db.ref('rooms/' + currentRoom).push({ user: currentUser, text: i.value.trim(), ts: Date.now() });
-        i.value = '';
-    }
+    window.sendMsg = () => {
+        const input = document.getElementById('msg-input');
+        if(!input.value.trim()) return;
+        push(ref(db, 'rooms/' + currentRoom), {
+            user: currentUser,
+            text: input.value.trim(),
+            ts: Date.now()
+        });
+        input.value = '';
+    };
 
-    function nukeChat() { if(confirm("¿ELIMINAR EVIDENCIA?")) db.ref('rooms/' + currentRoom).set(null); }
+    window.nukeChat = () => {
+        if(confirm("¿ELIMINAR EVIDENCIA?")) set(ref(db, 'rooms/' + currentRoom), null);
+    };
 </script>
 </body>
 </html>
